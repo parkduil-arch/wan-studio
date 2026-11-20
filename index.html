@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wan Studio">
+<meta name="theme-color" content="#0f1115">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%235b7cf0'/%3E%3Cpath d='M62 50l74 40-74 40z' fill='white'/%3E%3C/svg%3E">
+<title>Wan Studio</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --line:#2a2f3a; --text:#e8eaf0; --sub:#9aa3b2;
+    --accent:#7c9cff; --accent2:#5b7cf0; --ok:#3ecf8e; --warn:#f5b84b; --err:#ff6b6b; --r:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+  body{padding-bottom:env(safe-area-inset-bottom)}
+  header{padding-top:max(12px,env(safe-area-inset-top)) !important}
+  textarea,input,select{font-size:16px}
+  header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(15,17,21,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  header h1{font-size:17px;margin:0;letter-spacing:.2px}
+  header h1 span{color:var(--accent)}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--sub);display:inline-block}
+  .dot.ok{background:var(--ok)} .dot.bad{background:var(--err)}
+  #connText{font-size:13px;color:var(--sub)}
+  .spacer{flex:1}
+  button{font:inherit;color:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:8px 14px}
+  button:hover{border-color:#3a4150}
+  button.primary{background:var(--accent2);border-color:var(--accent2);color:#fff;font-weight:600}
+  button.primary:disabled{opacity:.5;cursor:default}
+  button.ghost{background:transparent}
+  main{max-width:880px;margin:0 auto;padding:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:16px}
+  .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+  .tab{padding:10px 6px;text-align:center;border-radius:10px;background:var(--panel2);border:1px solid var(--line);font-size:14px}
+  .tab b{display:block;font-size:12px;color:var(--sub);font-weight:500}
+  .tab.on{border-color:var(--accent);background:#1f2740}
+  .tab.on b{color:var(--accent)}
+  label.lbl{display:block;font-size:13px;color:var(--sub);margin:12px 0 6px}
+  textarea,input[type=text],input[type=password],input[type=number],select{width:100%;font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  textarea{min-height:84px;resize:vertical}
+  .drops{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+  .drop{position:relative;border:1.5px dashed #3a4150;border-radius:12px;min-height:150px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--sub);font-size:13px;padding:10px;overflow:hidden;cursor:pointer;background:var(--panel2)}
+  .drop.drag{border-color:var(--accent);color:var(--text)}
+  .drop img,.drop video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+  .drop .x{position:absolute;top:6px;right:6px;z-index:2;padding:2px 9px;border-radius:8px;background:rgba(0,0,0,.65);border:none}
+  .drop .tag{position:absolute;left:6px;bottom:6px;z-index:2;font-size:12px;background:rgba(0,0,0,.65);color:#fff;padding:2px 8px;border-radius:8px}
+  .drop input{display:none}
+  .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:3px}
+  .seg button{flex:1;border:none;background:transparent;padding:7px 4px;border-radius:8px;font-size:14px}
+  .seg button.on{background:#2b3550;color:#fff}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .hint{font-size:12.5px;color:var(--sub);margin-top:6px}
+  .go{margin-top:16px;display:flex;gap:10px;align-items:center}
+  .go .primary{flex:1;padding:13px;font-size:16px}
+  #sizeInfo{font-size:12.5px;color:var(--sub)}
+  .job{display:grid;grid-template-columns:1fr;gap:10px}
+  .job .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .badge{font-size:12px;padding:2px 9px;border-radius:999px;background:#2a2f3a;color:var(--sub)}
+  .badge.run{background:#2b3550;color:#c9d5ff} .badge.done{background:#163a2b;color:#7ff0bf} .badge.fail{background:#3f1d22;color:#ffb3b3}
+  .job .media{width:100%;max-height:70vh;border-radius:10px;background:#000;display:block}
+  .job .prompt{font-size:13px;color:var(--sub);white-space:pre-wrap;word-break:break-word}
+  .job .acts{display:flex;gap:8px;flex-wrap:wrap}
+  .job .acts a,.job .acts button{font-size:13.5px;padding:7px 12px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--text);text-decoration:none}
+  .err{color:var(--err);font-size:13.5px;white-space:pre-wrap;word-break:break-word}
+  .bar{height:4px;background:var(--panel2);border-radius:4px;overflow:hidden}
+  .bar i{display:block;height:100%;width:30%;background:var(--accent);animation:slide 1.4s infinite ease-in-out}
+  @keyframes slide{0%{margin-left:-30%}100%{margin-left:100%}}
+  dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:var(--r);padding:20px;width:min(520px,92vw)}
+  dialog::backdrop{background:rgba(0,0,0,.6)}
+  dialog h2{margin:0 0 4px;font-size:18px}
+  details summary{cursor:pointer;color:var(--sub);font-size:13px;margin-top:12px}
+  .advGrid{margin-top:6px}
+  .row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+  .empty{color:var(--sub);text-align:center;padding:24px 8px;font-size:14px}
+  header h1,header button{white-space:nowrap;flex-shrink:0}
+  #connText{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  @media (max-width:560px){ .tab{font-size:12.5px;padding:9px 3px} .tab b{font-size:11px} main{padding:12px} header{gap:7px;padding:10px 12px} #connText{font-size:12px} }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎬 Wan <span>Studio</span></h1>
+  <span class="dot" id="connDot"></span><span id="connText">연결 전</span>
+  <div class="spacer"></div>
+  <button class="ghost" id="openSettings">⚙️ 설정</button>
+</header>
+
+<main>
+  <section class="card">
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-mode="i2v">이미지→영상<b>I2V</b></button>
+      <button class="tab" data-mode="v2v">영상→영상<b>V2V</b></button>
+      <button class="tab" data-mode="i2i">이미지→이미지<b>I2I</b></button>
+      <button class="tab" data-mode="t2v">텍스트→영상<b>T2V</b></button>
+    </div>
+
+    <div id="slots" class="drops"></div>
+    <p class="hint" id="modeHint"></p>
+    <div id="v2vOpts" class="row" style="display:none;margin-top:4px">
+      <label class="lbl" for="vStart" style="margin:0">원본에서 쓸 시작 위치</label>
+      <input type="number" id="vStart" min="0" step="0.5" value="0" style="width:90px"> <span class="hint" style="margin:0">초부터 최대 5초</span>
+    </div>
+
+    <label class="lbl" for="prompt" id="promptLbl">프롬프트</label>
+    <textarea id="prompt"></textarea>
+    <p class="hint">영어로 쓰면 가장 잘 돼요. 한국어도 어느 정도 알아들어요.</p>
+
+    <div class="opts" style="margin-top:12px">
+      <div>
+        <label class="lbl">품질</label>
+        <div class="seg" id="quality">
+          <button data-v="fast" class="on">⚡ 빠르게</button>
+          <button data-v="hq">✨ 고품질</button>
+        </div>
+      </div>
+      <div class="vidOnly">
+        <label class="lbl">길이: <span id="secText">5</span>초</label>
+        <input type="range" id="seconds" min="1" max="5" step="1" value="5" style="width:100%">
+      </div>
+      <div class="vidOnly">
+        <label class="lbl" for="aspect">화면 비율</label>
+        <select id="aspect">
+          <option value="auto">사진에 맞춤</option>
+          <option value="1">정사각 1:1</option>
+          <option value="1.7778">가로 16:9</option>
+          <option value="0.5625">세로 9:16</option>
+        </select>
+      </div>
+      <div class="vidOnly">
+        <label class="lbl" for="res">해상도</label>
+        <select id="res">
+          <option value="480">480p (추천)</option>
+          <option value="720">720p (느림·VRAM 많이)</option>
+        </select>
+      </div>
+    </div>
+    <details id="adv">
+      <summary>고급 설정 (디노이즈 · 강도 · 스텝 · CFG · 시드)</summary>
+      <div class="advGrid">
+        <div class="denoiseOnly">
+          <label class="lbl" for="denoise">디노이즈: <b id="denoiseText">1.00</b></label>
+          <input type="range" id="denoise" min="0.1" max="1" step="0.05" value="1" style="width:100%">
+          <p class="hint" id="denoiseHint"></p>
+        </div>
+        <div class="fastOnly">
+          <label class="lbl" for="loraStrength">가속 LoRA 강도: <b id="loraText">1.00</b></label>
+          <input type="range" id="loraStrength" min="0" max="1.5" step="0.05" value="1" style="width:100%">
+          <p class="hint">'빠르게' 모드의 4스텝 가속 LoRA 세기예요. 기본 1.0. 낮추면 움직임·표현이 덜 뭉개지지만 흐려질 수 있어요.</p>
+        </div>
+        <div class="row2">
+          <div>
+            <label class="lbl" for="steps">스텝</label>
+            <input type="number" id="steps" min="1" max="100" step="1">
+          </div>
+          <div>
+            <label class="lbl" for="cfg">CFG</label>
+            <input type="number" id="cfg" min="0" max="20" step="0.1">
+          </div>
+          <div>
+            <label class="lbl" for="seed">시드</label>
+            <input type="number" id="seed" placeholder="랜덤">
+          </div>
+        </div>
+        <p class="hint">스텝·CFG를 비워두면 품질 모드의 기본값을 써요. 스텝을 늘리면 그만큼 오래 걸리고 비용도 늘어요.</p>
+        <div class="v2vOnly row2">
+          <div>
+            <label class="lbl" for="cannyLow">윤곽선 감도 (낮음)</label>
+            <input type="number" id="cannyLow" min="0.01" max="0.99" step="0.05" value="0.1">
+          </div>
+          <div>
+            <label class="lbl" for="cannyHigh">윤곽선 감도 (높음)</label>
+            <input type="number" id="cannyHigh" min="0.01" max="0.99" step="0.05" value="0.6">
+          </div>
+        </div>
+        <p class="hint v2vOnly">값을 낮추면 원본의 선을 더 많이 따라가고(구조 고정↑), 높이면 큰 윤곽만 따라가서 자유도가 커져요.</p>
+        <button class="ghost" id="resetAdv" type="button" style="margin-top:8px">기본값으로</button>
+      </div>
+    </details>
+
+    <div class="go">
+      <button class="primary" id="goBtn">생성하기</button>
+    </div>
+    <p id="sizeInfo"></p>
+  </section>
+
+  <section id="jobs"><div class="card empty" id="noJobs">아직 만든 결과가 없어요. 위에서 생성해 보세요.</div></section>
+</main>
+
+<dialog id="settings">
+  <h2>RunPod 연결 설정</h2>
+  <p class="hint">키는 이 브라우저에만 저장되고, RunPod 서버(api.runpod.ai)로만 보내져요.</p>
+  <label class="lbl" for="apiKey">RunPod API Key</label>
+  <input type="password" id="apiKey" autocomplete="off" placeholder="rpa_...">
+  <label class="lbl" for="endpointId">Endpoint ID</label>
+  <input type="text" id="endpointId" autocomplete="off" placeholder="예: abc123xyz">
+  <details>
+    <summary>고급</summary>
+    <label class="lbl" for="apiBase">API 주소</label>
+    <input type="text" id="apiBase" placeholder="https://api.runpod.ai/v2">
+  </details>
+  <p id="testMsg" class="hint"></p>
+  <div class="row" style="justify-content:flex-end;margin-top:14px">
+    <button id="testConn">연결 확인</button>
+    <button class="primary" id="saveSettings">저장</button>
+  </div>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.js"></script>
+<script src="workflows.js"></script>
+<script src="app1.js"></script>
+<script src="app2.js"></script>
+</body>
+</html>
